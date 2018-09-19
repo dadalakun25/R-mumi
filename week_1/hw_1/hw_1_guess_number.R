@@ -10,18 +10,23 @@ ans <- as.character(c(sample(0:9,size=4)))
 count <- 0
 a <- 0
 b <- 0
+bad_result <- FALSE
+good_result <- TRUE
 while(a<4){
   a <- 0
   b <- 0
   guess <- readline("請輸入一四位數:")
   guess <- substring(guess, 1:4, 1:4)
+  if(unique(good_result) %in% unique(duplicated(guess))) result1 <- TRUE
   dit <- c(as.character(seq(from =0, to=9, by=1))) #創造一個1~10的string向量
   result <- unique(guess) %in% unique(dit)         #將輸入值中是數字的轉成true不是數字則為false
-  bad_result <- FALSE
   result <- unique(bad_result) %in% unique(result) #如果結果中有至少一個false則進入迴圈直到數入全為數字
-  while(result){
-    print("輸入的並非數字喔~請重新輸入一四位數~")
+  while(result | result1){
+    print("輸入的並非數字或數字重複囉~請重新輸入一四位數~")
     guess <- readline("請輸入一四位數:")
+    abc <- duplicated(guess)
+    if(unique(good_result) %in% unique(duplicated(guess))) result1 <- TRUE
+    else result1 <- FALSE
     guess <- substring(guess, 1:4, 1:4)
     result <- unique(guess) %in% unique(dit)
     result <- unique(bad_result) %in% unique(result)
