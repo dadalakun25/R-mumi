@@ -24,10 +24,9 @@ while(a<4){
   while(result | result1){
     print("輸入的並非數字或數字重複囉~請重新輸入一四位數~")
     guess <- readline("請輸入一四位數:")
-    abc <- duplicated(guess)
+    guess <- substring(guess, 1:4, 1:4)
     if(unique(good_result) %in% unique(duplicated(guess))) result1 <- TRUE
     else result1 <- FALSE
-    guess <- substring(guess, 1:4, 1:4)
     result <- unique(guess) %in% unique(dit)
     result <- unique(bad_result) %in% unique(result)
   }
