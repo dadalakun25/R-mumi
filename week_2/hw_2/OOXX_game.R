@@ -4,6 +4,12 @@ count <- 1
 ooxx <- c(as.character(seq(from =1, to=9, by=1)))
 print("OOXX遊戲開始")
 while(p1_f==p2_f){
+  cat(ooxx[1],"|",ooxx[2],"|",ooxx[3])
+  cat("\n一","一","一","一\n")
+  cat(ooxx[4],"|",ooxx[5],"|",ooxx[6])
+  cat("\n一","一","一","一\n")
+  cat(ooxx[7],"|",ooxx[8],"|",ooxx[9])
+  print("請輸入1~9一數字")
   if(count==9){
     print("和局")
     break
@@ -30,11 +36,6 @@ while(p1_f==p2_f){
            ooxx[8] <- "X",
            ooxx[9] <- "X" )
   }
-  cat(ooxx[1],"|",ooxx[2],"|",ooxx[3])
-  cat("\n一","一","一","一\n")
-  cat(ooxx[4],"|",ooxx[5],"|",ooxx[6])
-  cat("\n一","一","一","一\n")
-  cat(ooxx[7],"|",ooxx[8],"|",ooxx[9])
   if(count%%2==1){
     if(ooxx[1]==ooxx[2]){
       if(ooxx[2]==ooxx[3]) p1_f <- 1  

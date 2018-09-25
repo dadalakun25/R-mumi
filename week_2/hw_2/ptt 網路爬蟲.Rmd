@@ -1,14 +1,13 @@
 ---
-title: "Untitled"
+title: "PTT KANCOLLE"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r }
 library(rvest)
-ur1 <- "https://www.ptt.cc/bbs/KanColle/index2252.html"
-res <- read_html(ur1)
-version.block <- html_nodes(res,'.r-ent:nth-child(3) a')
-head(version.block)
+str888 <- "https://www.ptt.cc/bbs/KanColle/index.html"
+str889 <- read_html(str888)
+str890 <- html_nodes(str889,".title")
 
 ```
 
@@ -18,15 +17,10 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
+```{r }
+str891 <- html_text(str890)
+cat(str891)
 ```
-
-
-```
-library(rvest)
-page.source <- read_html("https://en.wikipedia.org/wiki/R_(programming_language)")
-version.block <- html_nodes(page.source, "th+ td , th:nth-child(2) , th:nth-child(1)")
-head(version.block)
-version.block2 <- html_nodes(page.source,xpath = )
 
 ## Including Plots
 
