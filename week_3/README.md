@@ -14,3 +14,5 @@
 - 家中進度
     - 練習處理資料型態frame使資料更容易呈現
     - 完成當周作業
+    - avocado.html(https://dadalakun25.github.io/R-mumi/week_3/avocado.html)
+    - avocado.rmd
