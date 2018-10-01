@@ -1,5 +1,5 @@
 ---
-title: "美國各地牛油果產量與時間關係"
+title: "Avocado"
 output: html_document
 ---
 
@@ -45,7 +45,7 @@ ggplot(data=new.data)+
                 y=X4770,
                 color="4770"
                 ))+
-  labs(title="不同編號的牛油果產量與時間關係圖(in SouthCarolina)")
+  labs(title="不同編號的牛油果銷量與時間關係圖(in SouthCarolina)")
 new.data2 <- my.data[my.data$region == "California", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
 new.data2$Date <- as.Date(new.data2$Date)
 new.data2 <- new.data2[new.data2$Total.Volume >300000,]    
@@ -62,7 +62,7 @@ ggplot(data=new.data2)+
                 y=X4770,
                 color="4770"
                 ))+
-  labs(title="不同編號的牛油果產量與時間關係圖(in California)")
+  labs(title="不同編號的牛油果銷量與時間關係圖(in California)")
 ```
 
 
