@@ -2,8 +2,16 @@
 title: "Avocado"
 output: html_document
 ---
+##å·¥æµ·äºŒ å¼µåœ¨ç„¶
 
-##¤ûªoªG¡A¤]¬O¥xÆW¤H±`»¡ªº¹T±ù¡A¬O¬ü°êµø¬°¤@ºØ¨üÅwªïªº­¹ª«¡A¥»³ø§i©Ò²Î­pªº¸ê®Æ¬°¬ü°ê¦U¦a±q2015¦~¶}©l¡A¨ì2018¦~¬K¤Ñªº¤ûªoªG¾P¶q»P¥­§¡»ù®æ¸ê®Æ¡A³z¹L¤U­±¼Æ±i¹Ïªí¡A¶i¦æÂ²©öªº¤ÀªR
+```{r}
+Sys.Date()
+##ç‰›æ²¹æœï¼Œä¹Ÿæ˜¯å°ç£äººå¸¸èªªçš„é…ªæ¢¨ï¼Œæ˜¯ç¾åœ‹è¦–ç‚ºä¸€ç¨®å—æ­¡è¿çš„é£Ÿç‰©ï¼Œæœ¬å ±å‘Šæ‰€çµ±è¨ˆçš„è³‡æ–™ç‚ºç¾åœ‹å„åœ°å¾2015å¹´é–‹å§‹ï¼Œåˆ°2018å¹´æ˜¥å¤©çš„ç‰›æ²¹æœéŠ·é‡èˆ‡å¹³å‡åƒ¹æ ¼è³‡æ–™ï¼Œé€éä¸‹é¢æ•¸å¼µåœ–è¡¨ï¼Œé€²è¡Œç°¡æ˜“çš„åˆ†æ
+```
+
+
+
+
 
 ```{r}
 library(lubridate)
@@ -11,18 +19,17 @@ library(ggplot2)
 my.data <- read.csv("avocado1.csv")
 new.data <- my.data[my.data$region == "TotalUS", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
 new.data$Date <- as.Date(new.data$Date)
-new.data <- new.data[new.data$Total.Volume >1500000,] ##³z¹L³o¦æµ{¦¡¿z¿ï±¼·¥ºİ¸ê®Æ
-ggplot(new.data, aes(Date,Total.Volume))+geom_point(color="blue",size=3, pch=18) + labs(title="¬ü°ê¤ûªoªGÁ`¾P¶q»P®É¶¡Ãö«Y¹Ï") +
+new.data <- new.data[new.data$Total.Volume >1500000,]  ##é€éé€™è¡Œç¨‹å¼ç¯©é¸æ‰æ¥µç«¯è³‡æ–™
+ggplot(new.data, aes(Date,Total.Volume))+geom_point(color="blue",size=3, pch=18) + labs(title="ç¾åœ‹ç‰›æ²¹æœç¸½éŠ·é‡èˆ‡æ™‚é–“é—œä¿‚åœ–") +
   geom_smooth(aes(x=Date,
                   y=Total.Volume),stat = 'smooth', color = 'Red', method = 'gam')
-ggplot(new.data, aes(Date,AveragePrice))+geom_point(color="blue",size=3, pch=18) + labs(title="¬ü°ê¤ûªoªG¥­§¡»ù®æ»P®É¶¡Ãö«Y¹Ï") +
+ggplot(new.data, aes(Date,AveragePrice))+geom_point(color="blue",size=3, pch=18) + labs(title="ç¾åœ‹ç‰›æ²¹æœå¹³å‡åƒ¹æ ¼èˆ‡æ™‚é–“é—œä¿‚åœ–") +
   geom_smooth(aes(x=Date,
                   y=AveragePrice),stat = 'smooth', color = 'Red', method = 'gam')
+
+##ç”±ä¸‹è¡¨é¡¯ç¤ºå‡ºç‰›æ²¹æœéŠ·é‡èˆ‡å¹³å‡å”®åƒ¹çš„å­£ç¯€æ€§è®ŠåŒ–ï¼Œå€¼å¾—æ³¨æ„çš„æ˜¯ï¼Œç‰›æ²¹æœå”®åƒ¹å„˜ç®¡æœƒéš¨è‘—å­£ç¯€æ³¢å‹•ï¼Œä½†å…¶è¶¨å‹¢å»æ˜¯è¶Šä¾†è¶Šè²´ï¼Œå¯èƒ½åæ˜ äº†ä¾›ä¸æ‡‰æ±‚çš„ç‹€æ³æ ¹æ“šhttps://producebrands.com/the-avocado/ç¶²ç«™å°ç‰›æ²¹æœçš„ä»‹ç´¹ï¼Œç‰›æ²¹æœä¾ç·¨è™Ÿå¯ä»¥åˆ†æˆ10ç¨®ï¼Œè€Œæœ¬è³‡æ–™ä¸­æä¾›çš„ä¸‰ç¨®(4046/4225/4770)ï¼Œå¾å¤§å°ä¾†åˆ†åˆ†åˆ¥æ˜¯(small/large/ExtraLarge)ï¼Œä¸‹è¡¨å„å–æ±è¥¿å…©å²¸ä¸€åŸå¸‚æˆ–å·é€²è¡Œä¸‰ç¨®ç‰›æ²¹æœéŠ·é‡èˆ‡æ™‚é–“çš„çš„åˆ†æ
 ```
 
-##¤WªíÅã¥Ü¥X¤ûªoªG¾P¶q»P¥­§¡°â»ùªº©u¸`©ÊÅÜ¤Æ¡A­È±oª`·Nªº¬O¡A¤ûªoªG°â»ù¾¨ºŞ·|ÀHµÛ©u¸`ªi°Ê¡A¦ı¨äÁÍ¶Õ«o¬O¶V¨Ó¶V¶Q¡A¥i¯à¤Ï¬M¤F¨Ñ¤£À³¨Dªºª¬ªp
-
-##®Ú¾Ú https://producebrands.com/the-avocado/ ºô¯¸¹ï¤ûªoªGªº¤¶²Ğ¡A¤ûªoªG¨Ì½s¸¹¥i¥H¤À¦¨10ºØ¡A¦Ó¥»¸ê®Æ¤¤´£¨Ñªº¤TºØ(4046/4225/4770)¡A±q¤j¤p¨Ó¤À¤À§O¬O(small/large/Extra Large)¡A¤Uªí¦U¨úªF¦è¨â©¤¤@«°¥«©Î¦{¶i¦æ¤TºØ¤ûªoªG¾P¶q»P®É¶¡ªºªº¤ÀªR
 
 ```{r}
 library(lubridate)
@@ -45,7 +52,7 @@ ggplot(data=new.data)+
                 y=X4770,
                 color="4770"
                 ))+
-  labs(title="¤£¦P½s¸¹ªº¤ûªoªG¾P¶q»P®É¶¡Ãö«Y¹Ï(in SouthCarolina)")
+  labs(title="ä¸åŒç·¨è™Ÿçš„ç‰›æ²¹æœéŠ·é‡èˆ‡æ™‚é–“é—œä¿‚åœ–(in SouthCarolina)")
 new.data2 <- my.data[my.data$region == "California", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
 new.data2$Date <- as.Date(new.data2$Date)
 new.data2 <- new.data2[new.data2$Total.Volume >300000,]    
@@ -62,10 +69,13 @@ ggplot(data=new.data2)+
                 y=X4770,
                 color="4770"
                 ))+
-  labs(title="¤£¦P½s¸¹ªº¤ûªoªG¾P¶q»P®É¶¡Ãö«Y¹Ï(in California)")
+  labs(title="ä¸åŒç·¨è™Ÿçš„ç‰›æ²¹æœéŠ·é‡èˆ‡æ™‚é–“é—œä¿‚åœ–(in California)")
 ```
 
 
-##¥Ñ¤W¹Ï¥iª¾¡A¤£ºŞ¬O¦b¥[¦{©Î¬O«n¥dÃ¹µÜ¯Ç¦{¡A½s¸¹4046ªº¤ûªoªG¸û¨ü¨ì®ø¶OªÌ«C·ıªº
+
+```{r}
+##ç”±ä¸Šåœ–å¯çŸ¥ï¼Œä¸ç®¡æ˜¯åœ¨åŠ å·æˆ–æ˜¯å—å¡ç¾…èŠç´å·ï¼Œç·¨è™Ÿ4046çš„ç‰›æ²¹æœè¼ƒå—åˆ°æ¶ˆè²»è€…é’ççš„
+```
 
 
