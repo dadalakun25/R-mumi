@@ -14,18 +14,18 @@ Sys.Date()
 
 
 ```{r}
-library(lubridate)
+library(lubridate) #引入處理時間的套件--lubridate
 library(ggplot2)
 my.data <- read.csv("avocado1.csv")
-new.data <- my.data[my.data$region == "TotalUS", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
-new.data$Date <- as.Date(new.data$Date)
-new.data <- new.data[new.data$Total.Volume >1500000,]  ##透過這行程式篩選掉極端資料
-ggplot(new.data, aes(Date,Total.Volume))+geom_point(color="blue",size=3, pch=18) + labs(title="美國牛油果總銷量與時間關係圖") +
+new.data <- my.data[my.data$region == "TotalUS", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")] #擷取出特定幾個可能會處理到的欄位
+new.data$Date <- as.Date(new.data$Date) #將日期那個欄位轉換成資料型態"Date""
+new.data <- new.data[new.data$Total.Volume >1500000,]  #透過這行程式篩選掉極端資料，只選擇總量大於一百五十萬的資料
+ggplot(new.data, aes(Date,Total.Volume))+geom_point(color="blue",size=3, pch=18) +  labs(title="美國牛油果總銷量與時間關係圖") + #畫成傘散佈圖&加上標題
   geom_smooth(aes(x=Date,
-                  y=Total.Volume),stat = 'smooth', color = 'Red', method = 'gam')
+                  y=Total.Volume),stat = 'smooth', color = 'Red', method = 'gam') #畫回歸直線了解趨勢
 ggplot(new.data, aes(Date,AveragePrice))+geom_point(color="blue",size=3, pch=18) + labs(title="美國牛油果平均價格與時間關係圖") +
   geom_smooth(aes(x=Date,
-                  y=AveragePrice),stat = 'smooth', color = 'Red', method = 'gam')
+                  y=AveragePrice),stat = 'smooth', color = 'Red', method = 'gam') #畫回歸直線了解趨勢
 
 ##由下表顯示出牛油果銷量與平均售價的季節性變化，值得注意的是，牛油果售價儘管會隨著季節波動，但其趨勢卻是越來越貴，可能反映了供不應求的狀況根據https://producebrands.com/the-avocado/網站對牛油果的介紹，牛油果依編號可以分成10種，而本資料中提供的三種(4046/4225/4770)，從大小來分分別是(small/large/ExtraLarge)，下表各取東西兩岸一城市或州進行三種牛油果銷量與時間的的分析
 ```
@@ -34,11 +34,11 @@ ggplot(new.data, aes(Date,AveragePrice))+geom_point(color="blue",size=3, pch=18)
 ```{r}
 library(lubridate)
 library(ggplot2)
-library(readr)
 my.data <- read.csv("avocado1.csv")
-new.data <- my.data[my.data$region == "SouthCarolina", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
+new.data <- my.data[my.data$region == "SouthCarolina", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")] #只取REGION=南卡羅來納州的資料
 new.data$Date <- as.Date(new.data$Date)
-new.data <- new.data[new.data$Total.Volume >50000,]    
+new.data <- new.data[new.data$Total.Volume >50000,]
+#畫出三種牛油果的折線圖
 ggplot(data=new.data)+
   geom_line(aes(x=Date,
                 y=X4046,
@@ -53,7 +53,7 @@ ggplot(data=new.data)+
                 color="4770"
                 ))+
   labs(title="不同編號的牛油果銷量與時間關係圖(in SouthCarolina)")
-new.data2 <- my.data[my.data$region == "California", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")]
+new.data2 <- my.data[my.data$region == "California", c("Date","Total.Volume","AveragePrice","X4046","X4225","X4770","region")] #只取REGION=加州的資料
 new.data2$Date <- as.Date(new.data2$Date)
 new.data2 <- new.data2[new.data2$Total.Volume >300000,]    
 ggplot(data=new.data2)+
