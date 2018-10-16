@@ -1,0 +1,38 @@
+---
+title: "Japan_traveling"
+output: html_document
+---
+##本報告旨在透過觀察一年間ptt日本旅遊板的文章，希望能整理出台灣遊客在不同時節間，赴日本旅遊的地點的選擇上有什麼不同
+
+```{r}
+#引入所需要的套件包
+rm(list=ls(all.names = TRUE))
+library(bitops)
+library(httr)
+library(RCurl)
+library(XML)
+library(tm)
+library(NLP)
+library(tmcn)
+library(jiebaRD)
+library(jiebaR)
+library(RColorBrewer)
+library(wordcloud)
+library(forcats)
+library(ggplot2)
+```
+
+```{r}
+##文字清洗
+toSpace <- content_transformer(function(x, pattern) {
+  return (gsub(pattern, " ", x))
+}
+)
+d.corpus <- Corpus( DirSource("./DATA") )
+d.corpus <- tm_map(d.corpus, removePunctuation)
+d.corpus <- tm_map(d.corpus, removeNumbers)
+
+d.corpus <- tm_map(d.corpus, function(word) {
+    gsub("[A-Za-z0-9]", "", word)
+})
+```
