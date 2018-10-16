@@ -12,5 +12,5 @@
     
 - 家中進度
     - 完成作業
-    - [tfidf](https://dadalakun25.github.io/R-mumi/week_5/日本旅遊html)
+    - [tfidf](https://dadalakun25.github.io/R-mumi/week_5/japan_travling.html)
 
