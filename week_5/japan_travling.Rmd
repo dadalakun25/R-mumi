@@ -6,7 +6,7 @@ author: 工海二張在然
 ##本報告旨在透過觀察一年間ptt日本旅遊板的文章，希望能整理出台灣遊客在不同時節間，赴日本旅遊的地點的選擇上有什麼不同
 
 ```{r}
-#引入所需要的套件包
+##引入所需要的套件包
 rm(list=ls(all.names = TRUE))
 library(bitops)
 library(httr)
