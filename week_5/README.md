@@ -12,5 +12,5 @@
     
 - 家中進度
     - 完成作業
-    - [tfidf](https://dadalakun25.github.io/R-mumi/week_5/japan_travling.html)
+    - [tfidf](https://dadalakun25.github.io/R-mumi/week_5/japan_travling.html) 目前因為不明原因沒法連上
 
