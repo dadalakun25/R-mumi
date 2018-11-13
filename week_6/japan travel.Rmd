@@ -1,0 +1,305 @@
+---
+title: "Untitled"
+author: "esoe loli_protector"
+date: "2018/10/24"
+output: html_document
+---
+
+```{r}
+rm(list=ls(all.names = TRUE))
+library(bitops)
+library(dplyr)
+library(httr)
+library(RCurl)
+library(XML)
+library(tm)
+library(NLP)
+library(tmcn)
+library(jiebaRD)
+library(jiebaR)
+library(RColorBrewer)
+library(wordcloud)
+library(forcats)
+library(ggplot2)
+```
+```{r}
+memory.limit(40000)
+```
+```{r}
+##words washing
+toSpace <- content_transformer(function(x, pattern) {
+  return (gsub(pattern, " ", x))
+}
+)
+d.corpus <- Corpus( DirSource("./travel") )
+d.corpus <- tm_map(d.corpus, removePunctuation)
+d.corpus <- tm_map(d.corpus, removeNumbers)
+
+d.corpus <- tm_map(d.corpus, function(word) {
+    gsub("[A-Za-z0-9]", "", word)
+})
+```
+```{r}
+###########暫時沒用
+##pick 100 articles from each season
+vector1 <- list()
+for(i in c(5367:5391)){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]]
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]]))
+  #vector1 <- c(vector1,txt2)
+}
+for(i in c(5460:5485)){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]]
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]]))
+
+  #vector1 <- c(vector1,txt2)
+}
+
+for(i in c(5666:5691)){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]] 
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]])) #cut one article into several .txt
+
+  #vector1 <- c(vector1,txt2)
+  
+}
+
+for(i in c(6004:6029)){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]]
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]]))
+
+  #vector1 <- c(vector1,txt2)
+  
+}
+###########ˇ暫時沒用
+```
+```{r}
+vector1 <- list()
+id = c(10:20,30:40,50:60,70:80,90:100,110:120,130:140,150:160,170:180,190:200)
+for(i in id){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]] 
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]])) #cut one article into several .txt
+
+  #vector1 <- c(vector1,txt2)
+  
+}
+```
+
+
+```{r}
+#using crawler put the site into new_user_words
+library(rvest)
+mixseg = worker()
+doc <- read_html("https://www.welcome2japan.tw/location/destinations/")
+place <- doc %>% html_nodes("#right li a , #left li a , #main li a , h4 a") %>% html_text()
+
+new_user_word(mixseg,place)
+#let "place" be a data frame and the words in the frame become chr
+place <- data.frame(place)
+colnames(place)[colnames(place)=="place"] <- "words"
+place$words <- as.character(place$words)
+```
+```{r}
+#cut words
+jieba_tokenizer = function(d)
+{
+  unlist( segment(d[[1]], mixseg) )
+}
+seg = lapply(vector1, jieba_tokenizer)
+
+count_token = function(d)
+{
+  as.data.frame(table(d))
+}
+tokens = lapply(seg, count_token)
+```
+```{r}
+n = length(seg)
+TDM = tokens[[1]]
+colNames <- names(seg)
+colNames <- c(1:n) 
+```
+
+
+
+```{r}
+
+for( id in c(2:n) )
+{
+  TDM = merge(TDM, tokens[[id]], by = "d", all = TRUE)
+  names(TDM) = c('d', colNames[1:id])
+}
+
+ #delete the words that under 2 character
+TDM[is.na(TDM)] <- 0
+TDM$d <- as.character(TDM$d)
+TDM <- TDM[nchar(TDM$d)>1,]
+library(knitr)
+kable(head(TDM))
+kable(tail(TDM))
+```
+
+
+
+```{r}
+
+tf <- apply(as.matrix(TDM[,2:(n+1)]), 2, sum)
+
+library(Matrix)
+idfCal <- function(word_doc)
+{ 
+  log2( n / nnzero(word_doc) ) 
+}
+idf <- apply(as.matrix(TDM[,2:(n+1)]), 1, idfCal)
+
+doc.tfidf <- TDM
+#use the Tf-Idf to calculate the weight of each word
+
+tempY = matrix(rep(c(as.matrix(tf)), each = length(idf)), nrow = length(idf))
+tempX = matrix(rep(c(as.matrix(idf)), each = length(tf)), ncol = length(tf), byrow = TRUE)
+doc.tfidf[,2:(n+1)] <- (doc.tfidf[,2:(n+1)] / tempY) * tempX
+
+
+```
+
+
+
+
+```{r}
+stopLine = rowSums(doc.tfidf[,2:(n+1)])
+delID = which(stopLine == 0)
+library(knitr)
+kable(head(doc.tfidf[delID,1]))
+kable(tail(doc.tfidf[delID,1]))
+```
+
+
+```{r}
+TopWords = data.frame()
+for( id in c(1:n) )
+{
+  dayMax = order(doc.tfidf[,id+1], decreasing = TRUE)
+  showResult = t(as.data.frame(doc.tfidf[dayMax[1:20],1]))
+  TopWords = rbind(TopWords, showResult)
+}
+rownames(TopWords) = colnames(doc.tfidf)[2:(n+1)]
+TopWords = droplevels(TopWords)
+kable(TopWords)
+
+```
+
+
+
+```{r}
+TDM$d = as.character(TDM$d)
+AllTop = as.data.frame( table(as.matrix(TopWords)) )
+AllTop = AllTop[order(AllTop$Freq, decreasing = TRUE),]
+
+kable(head(AllTop))
+```
+
+```{r}
+##deal with the data that we want to use in pca
+library(stats)
+
+names <- doc.tfidf$d ##abstract the words of seg and name the new matrix
+doc.tfidf <- subset(doc.tfidf, select = -d ) 
+matrix <- data.matrix(doc.tfidf)
+row.names(matrix) <- names #make the result of tf-idf be a new matrix
+
+```
+```{r}
+r_mat <- t(matrix) #rotate the matrix
+```
+
+###
+
+```{r}
+#pca to colume
+pcs2 <- prcomp(r_mat, center = T, scale = F) #do pca
+plot(pcs2)
+```
+
+
+```{r}
+center <- as.matrix(pcs2$center) #take the result of pca that we will use in kmeans
+str(center)
+```
+```{r}
+#take the Specific words 
+mumi <- data.frame(center)
+colnames(mumi) <- "abc"
+mumi$names <- row.names(mumi)
+mumi <- mumi[unique(mumi$names) %in% unique(place$words),]
+relation_place <- mumi$abc
+relation_place <- data.frame(relation_place)
+row.names(relation_place) <- mumi$names
+relation_place <- as.vector(relation_place)
+```
+
+```{r}
+#kmeans
+
+k <- 4 #make 5 centers
+pr.km <- kmeans(relation_place, centers = k, nstart = 10)
+
+
+
+```
+
+
+```{r}
+#test each group distributed by kmeans
+pr.km$cluster[pr.km$cluster==4]
+```
+```{r}
+library(ggplot2)
+library(ggdendro)
+theme_set(theme_bw())
+hc <- hclust(dist(relation_place), "ave")  # hierarchical clustering
+
+# plot
+ggdendrogram(hc, rotate = TRUE, size = 2)
+
+
+```
+```{r}
+
+pr.km$cluster <- pr.km$cluster[unique(names(pr.km$cluster)) %in% unique(place$words)]
+str(pr.km$cluster)
+pr.km$cluster
+name(cluster)
+names(pr.km$cluster)
+unique(names(pr.km$cluster)) %in% unique(place$words)
+pr.km$cluster[unique(names(pr.km$cluster)) %in% unique(place$words),]
+```
+
+```{r}
+l = 6
+
+pr.km <- kmeans(r_mat, centers = 6, nstart = 10)
+
+
+```
+
+
+```{r}
+#test each group distributed by kmeans
+
+pr.km$cluster[pr.km$cluster==2]
+```
+
+
+
+
+
+
