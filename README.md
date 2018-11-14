@@ -21,3 +21,8 @@
 
 ### week_5
 - Tf-idf
+
+### week_6,7,8
+- pca降維
+- Kmeans分群
+- Shiny app
