@@ -1,0 +1,393 @@
+---
+title: "japan_travel"
+author: "張在然"
+date: "2018/11/15"
+output: html_document
+---
+##In the project, I collected article from ptt-japan_travel, and by using tf-idf,pca,and kmeans, I want to make a system to help people determine where they have fun in Japan. 
+
+
+```{r}
+rm(list=ls(all.names = TRUE))
+library(bitops)
+library(dplyr)
+library(httr)
+library(RCurl)
+library(XML)
+library(tm)
+library(NLP)
+library(tmcn)
+library(jiebaRD)
+library(jiebaR)
+library(RColorBrewer)
+library(wordcloud)
+library(forcats)
+library(ggplot2)
+library(ggmap)
+library(googleway)
+```
+```{r}
+memory.limit(40000)
+```
+```{r}
+##words washing
+toSpace <- content_transformer(function(x, pattern) {
+  return (gsub(pattern, " ", x))
+}
+)
+d.corpus <- Corpus( DirSource("./travel") )
+d.corpus <- tm_map(d.corpus, removePunctuation)
+d.corpus <- tm_map(d.corpus, removeNumbers)
+
+d.corpus <- tm_map(d.corpus, function(word) {
+    gsub("[A-Za-z0-9]", "", word)
+})
+```
+
+```{r}
+vector1 <- list()
+id = c(10:20,50:60,90:100,130:140,170:180)
+for(i in id){
+  file_name <- paste0(i,".txt")
+  txt <- d.corpus[[file_name]][["content"]] 
+  #my_list <- list(my_list,list(strsplit(txt, "看板標題")))
+  vector1 <- c(vector1,as.list(strsplit(txt, "看板標題")[[1]])) #cut one article into several .txt
+
+  #vector1 <- c(vector1,txt2)
+}
+```
+
+
+```{r}
+#using crawler put the site into new_user_words
+library(rvest)
+mixseg = worker()
+place <- read.csv("location.csv")
+# doc <- read_html("https://www.welcome2japan.tw/location/destinations/")
+# place <- doc %>% html_nodes("#right li a , #left li a , #main li a , h4 a") %>% html_text()
+place$words <- as.character(place$words)
+new_user_word(mixseg,place$words)
+#let "place" be a data frame and the words in the frame become chr
+# place <- data.frame(place)
+# colnames(place)[colnames(place)=="place"] <- "words"
+
+```
+```{r}
+###get the location of each place
+#library(curl)
+#register_google(key = "AIzaSyCYIbzoIJnDaWbTjYg2do0cJvnKvQcfdos", day_limit = 1000)
+#ggmap_credentials()
+#place$url <- curl_escape(place$words)
+#mumi2 <- geocode(place$url) #get the lon. & lat. from google map
+#place <- cbind(place,mumi2)
+#output the dataframe to a csv file that I can easily use at next time
+#write.table(place, file = "location.CSV", sep = ",") 
+#########error fixed
+# place[6,]$lon <-  135.780874
+# place[6,]$lat <-  35.004970
+# place[21,]$lon <-  141.165949
+# place[21,]$lat <-  41.807325
+# place[56,]$lon <-  136.782145
+# place[56,]$lat <-  35.437979
+# place[74,]$lon <-  140.118774
+# place[74,]$lat <-  37.781968
+# place[92,]$lon <-  140.631265
+# place[92,]$lat <-  35.969793
+# place[97,]$lon <-  140.568312
+# place[97,]$lat <-  35.904732
+# place[139,]$lon <-  139.710123
+# place[139,]$lat <-  35.668194
+# place[173,]$lon <-  139.767548
+# place[173,]$lat <-  35.723755
+# place[139,]$words <-  "青山"
+# place[173,]$words <-  "谷中"
+# place[177,]$lon <-  139.646399
+# place[177,]$lat <-  35.442490
+# place[202,]$lon <-  139.050917
+# place[202,]$lat <-  37.931063
+# place[215,]$words <-  "黑部峽谷"
+# place[215,]$lon <-  139.767548
+# place[215,]$lat <-  35.723755
+# place[243,]$lon <-  137.837556
+# place[243,]$lat <-  35.794174
+# place[250,]$lon <-  138.193835
+# place[250,]$lat <-  36.819411
+# place[257,]$lon <-  138.375762
+# place[257,]$lat <-  36.731936
+# place[272,]$words <-  "奧美濃"
+# place[278,]$words <-  "天城山"
+# place[278,]$lon <-  139.006126
+# place[278,]$lat <-  34.867634
+# place[294,]$lon <-  136.980103
+# place[294,]$lat <-  35.156302
+# place[303,]$lon <-  136.903153
+# place[303,]$lat <-  35.166792
+# place[305,]$lon <-  136.964809
+# place[305,]$lat <-  35.144488
+# place[321,]$lon <-  136.227225
+# place[321,]$lat <-  35.502579
+# place[329,]$words <-  "高野"
+# place[329,]$lon <-  135.583316
+# place[329,]$lat <-  34.210129
+# place[334,]$lon <-  135.778236
+# place[334,]$lat <-  34.988425
+# place[336,]$lon <-  135.630637
+# place[336,]$lat <-  35.000305
+# place[340,]$lon <-  135.776043
+# place[340,]$lat <-  34.946349
+# place[343,]$lon <-  135.834102
+# place[343,]$lat <-  35.120608
+# place[348,]$lon <-  135.731163
+# place[348,]$lat <-  35.054886
+# place[354,]$words <-  "金閣寺"
+# place[354,]$lon <-  135.729211
+# place[354,]$lat <-  35.039475
+# place[366,]$lon <-  135.506768
+# place[366,]$lat <-  34.654429
+# place[362,]$words <-  "堺"
+# place[380,]$lon <-  135.209488
+# place[380,]$lat <-  34.743067
+# place[381,]$lon <-  135.265519
+# place[381,]$lat <-  34.783101
+# place[397,]$lon <-  135.659390
+# place[397,]$lat <-  34.965333
+# place[399,]$lon <-  135.844556
+# place[399,]$lat <-  34.677645
+# place[424,]$lon <-  133.117340
+# place[424,]$lat <-  35.501052
+# place[439,]$words <-  "瀨戶大橋"
+# place[435,]$lon <-  133.871881
+# place[435,]$lat <-  34.694775
+# place[448,]$words <-  "迪士尼"
+# place[448,]$lon <-  139.882926
+# place[448,]$lat <-  35.635676
+# place[452,]$lon <-  131.458020
+# place[452,]$lat <-  34.190152
+# place[476,]$words <-  "合掌村"
+# place[476,]$lon <-  136.902172
+# place[476,]$lat <-  36.269519
+# place[489,]$words <-  "河口湖"
+# place[489,]$lon <-  138.750682
+# place[489,]$lat <-  35.522115
+# place[514,]$words <-  "由布院"
+# place[514,]$lon <-  131.362938
+# place[514,]$lat <-  33.280955
+# place[540,]$lon <-  131.633469
+# place[540,]$lat <-  32.421315
+# place[541,]$words <-  "宮崎"
+######
+# place <- read.csv("location.csv")
+```
+
+##The map show all the scenic spot in Japan that I pulled from https://www.welcome2japan.tw/location/destinations/
+
+```{r}
+###map of the location list
+library(leaflet)
+place=place[!duplicated(place$words),]
+place$words <- as.character(place$words)
+map <- leaflet() %>%
+  addTiles() %>%
+  fitBounds("137","30","138","45") %>%
+  addMarkers(lng=place$lon,lat=place$lat,popup=place$words)
+map
+```
+
+```{r}
+#cut words
+jieba_tokenizer = function(d)
+{
+  unlist( segment(d[[1]], mixseg) )
+}
+seg = lapply(vector1, jieba_tokenizer)
+
+count_token = function(d)
+{
+  as.data.frame(table(d))
+}
+tokens = lapply(seg, count_token)
+```
+```{r}
+n = length(seg)
+TDM = tokens[[1]]
+colNames <- names(seg)
+colNames <- c(1:n) 
+```
+
+
+
+```{r}
+
+for( id in c(2:n) )
+{
+  TDM = merge(TDM, tokens[[id]], by = "d", all = TRUE)
+  names(TDM) = c('d', colNames[1:id])
+}
+
+ #delete the words that under 2 character
+TDM[is.na(TDM)] <- 0
+TDM$d <- as.character(TDM$d)
+TDM <- TDM[nchar(TDM$d)>1,]
+#TDM <- read.csv("TDM.csv")
+library(knitr)
+kable(head(TDM))
+kable(tail(TDM))
+```
+
+
+
+```{r}
+
+tf <- apply(as.matrix(TDM[,2:(n+1)]), 2, sum)
+
+library(Matrix)
+idfCal <- function(word_doc)
+{ 
+  log2( n / nnzero(word_doc) ) 
+}
+idf <- apply(as.matrix(TDM[,2:(n+1)]), 1, idfCal)
+
+doc.tfidf <- TDM
+#use the Tf-Idf to calculate the weight of each word
+
+tempY = matrix(rep(c(as.matrix(tf)), each = length(idf)), nrow = length(idf))
+tempX = matrix(rep(c(as.matrix(idf)), each = length(tf)), ncol = length(tf), byrow = TRUE)
+doc.tfidf[,2:(n+1)] <- (doc.tfidf[,2:(n+1)] / tempY) * tempX
+
+
+```
+
+
+
+
+```{r}
+stopLine = rowSums(doc.tfidf[,2:(n+1)])
+delID = which(stopLine == 0)
+library(knitr)
+kable(head(doc.tfidf[delID,1]))
+kable(tail(doc.tfidf[delID,1]))
+```
+
+
+```{r}
+TopWords = data.frame()
+for( id in c(1:n) )
+{
+  dayMax = order(doc.tfidf[,id+1], decreasing = TRUE)
+  showResult = t(as.data.frame(doc.tfidf[dayMax[1:20],1]))
+  TopWords = rbind(TopWords, showResult)
+}
+rownames(TopWords) = colnames(doc.tfidf)[2:(n+1)]
+TopWords = droplevels(TopWords)
+kable(TopWords)
+
+```
+
+
+
+```{r}
+TDM$d = as.character(TDM$d)
+AllTop = as.data.frame( table(as.matrix(TopWords)) )
+AllTop = AllTop[order(AllTop$Freq, decreasing = TRUE),]
+
+kable(head(AllTop))
+```
+
+```{r}
+##deal with the data that we want to use in pca
+library(stats)
+
+names <- doc.tfidf$d ##abstract the words of seg and name the new matrix
+doc.tfidf <- subset(doc.tfidf, select = -d ) 
+matrix <- data.matrix(doc.tfidf)
+row.names(matrix) <- names #make the result of tf-idf be a new matrix
+
+r_mat <- t(matrix) #rotate the matrix
+```
+
+
+
+
+```{r}
+#pca to colume
+pcs2 <- prcomp(r_mat, center = T, scale = F) #do pca
+
+```
+
+
+```{r}
+center <- as.matrix(pcs2$center) #take the result of pca that we will use in kmeans
+str(center)
+
+#take the Specific words 
+mumi <- data.frame(center)
+colnames(mumi) <- "abc"
+mumi$names <- row.names(mumi)
+mumi <- mumi[unique(mumi$names) %in% unique(place$words),]
+relation_place <- mumi$abc
+relation_place <- data.frame(relation_place)
+row.names(relation_place) <- mumi$names
+```
+```{r}
+relation_place$words <-  row.names(relation_place)
+relation_place <- merge(relation_place,place,by = "words",all.X = TRUE)
+relation_place=relation_place[!duplicated(relation_place$words),]
+relation_place <- subset(relation_place, select = -url) 
+row.names(relation_place) <- relation_place$words
+relation_place <- subset(relation_place, select = -words) #
+#write.table(relation_place, file = "relation_place.CSV", sep = ",")
+#relation_place <- as.vector(relation_place)
+
+relation_place_nolatlon <- subset(relation_place, select = -lat) 
+relation_place_nolatlon <- subset(relation_place_nolatlon, select = -lon) #
+#write.table(relation_place_nolatlon, file = "relation_place_nolatlon.CSV", sep = ",")
+```
+
+
+```{r}
+#kmeans
+relation_place.CSV <- read.csv("relation_place.CSV")
+relation_place_nolatlon.CSV <- read.csv("relation_place_nolatlon.CSV")
+k <- 6 #make 5 centers
+
+pr.km_with_lat_lon <- kmeans(relation_place, centers = k, nstart = 10)
+pr.km_original <- kmeans(relation_place_nolatlon, centers = k, nstart = 10)
+
+relation_place$ cluster <- pr.km_with_lat_lon$cluster
+relation_place_nolatlon$ cluster <- pr.km_original$cluster
+
+relation_place_nolatlon$lonn <- relation_place$lon
+relation_place_nolatlon$lat <- relation_place$lat
+```
+
+
+```{r}
+#test each group distributed by kmeans (put the lon. & lat. into grouping)
+group = 6
+
+pr.km_with_lat_lon$cluster[pr.km_with_lat_lon$cluster == group]
+group_place <- relation_place[relation_place$cluster == group,]
+group_place$words <- row.names(group_place)
+
+pr.km_original$cluster[pr.km_original$cluster == group]
+group_place_original <- relation_place_nolatlon[relation_place_nolatlon$cluster == group,]
+group_place_original$words <- row.names(group_place_original)
+
+map2 <- leaflet() %>%
+  addTiles() %>%
+  fitBounds("137","30","138","45") %>%
+  addMarkers(lng=group_place$lon,lat=group_place$lat,popup=group_place$words)
+map2
+
+map3 <- leaflet() %>%
+  addTiles() %>%
+  fitBounds("137","30","138","45") %>%
+  addMarkers(lng=group_place_original$lon,lat=group_place_original$lat,popup=group_place_original$words)
+map3
+```
+
+
+
+
+
+
