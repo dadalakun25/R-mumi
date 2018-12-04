@@ -28,5 +28,5 @@
 - Shiny app
 
 ### week_10
--NER
--pyhanlp
+- NER
+- pyhanlp
