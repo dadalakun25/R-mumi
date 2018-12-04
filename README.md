@@ -26,3 +26,7 @@
 - pca降維
 - Kmeans分群
 - Shiny app
+
+### week_10
+-NER
+-pyhanlp
